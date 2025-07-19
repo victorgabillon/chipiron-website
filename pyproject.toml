@@ -1,0 +1,122 @@
+  [build-system]
+  requires = ["setuptools>=80.9.0"]
+  build-backend = "setuptools.build_meta"
+
+
+  [project]
+  name = "chipiron-website"
+  version = "0.0.0"
+  description = "website to play against chipiron"
+  keywords = ["chess", "AI", "flask"]
+  classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+  ]
+  requires-python = ">=3.12"
+  dependencies = [
+      "chipiron==0.1.9",
+      "flask",
+      "flask_cors",
+      "gunicorn",
+      "werkzeug",
+      "bootstrap-flask"
+  ]
+  license = "GPL-3.0-only"
+  license-files = ["LICENSE"]
+
+  readme = { file = "README.md", content-type = "text/markdown" }
+
+  authors = [
+    { name = "Victor Gabillon", email = "victorgabillon@gmail.com" }
+  ]
+
+  [project.urls]
+  Homepage = "https://github.com/victorgabillon/chipiron-website"
+  "Bug Tracker" = "https://github.com/victorgabillon/chipiron-website/issues"
+
+
+  [tool.setuptools]
+  include-package-data = true
+
+
+
+  [tool.setuptools.packages.find]
+  where = ["."]
+  include = ["flaskapp", "flaskapp.*"]
+  exclude = ["tests*", "docs", "examples", "build", "dist", "venv", "env", ".venv", ".env", "__pycache__", "*.egg-info"]
+
+
+
+  [tool.pytest.ini_options]
+  addopts = "--cov=chipiron"
+  testpaths = [
+      "flaskapp",
+  ]
+
+  [tool.mypy]
+  mypy_path = "."
+  ignore_missing_imports = true
+  show_error_codes = true
+  warn_unreachable = true
+  no_implicit_reexport = true
+
+  # Disallow dynamic typing
+  #disallow_any_unimported = true
+  #disallow_any_expr = true
+  #disallow_any_decorated = true
+  #disallow_any_generics = true
+  #disallow_any_explicit = true
+  #disallow_subclassing_any = true
+
+  # Disallow untyped definitions and calls
+  disallow_untyped_calls = true
+  disallow_untyped_defs = true
+  disallow_incomplete_defs = true
+  check_untyped_defs = true
+  disallow_untyped_decorators = true
+
+  # None and optional handling
+  no_implicit_optional = true
+
+  # Configuring warnings
+  warn_unused_ignores = true
+  warn_no_return = true
+  warn_return_any = true
+  warn_redundant_casts = true
+
+  # Misc things
+  strict_equality = true
+
+  # Config file
+  warn_unused_configs = true
+
+
+  [tool.isort]
+  profile = "black"
+
+  [tool.flake8]
+  max-line-length = 80
+  extend-ignore = ["E203","E501","E701"]
+  extend-select = ["B950"]
+
+
+
+  [tool.pylint.format]
+  max-line-length = "88"
+
+  [[tool.mypy.overrides]]
+  module = [
+      "PySide6",
+  ]
+  ignore_missing_imports = true
+  follow_imports = 'skip'
+
+
+  [[tool.mypy.overrides]]
+  module = 'PySide6.*'
+  follow_imports = 'skip'
+  ignore_missing_imports = true
+
+
+  [tool.mypy-PySide6]
+  ignore_missing_imports = true
