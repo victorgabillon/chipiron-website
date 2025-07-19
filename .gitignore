@@ -8,6 +8,7 @@ chipiron/.ipynb_checkpoints
 __pycache__
 
 build/*
+dist/*
 
 data/syzygy-tables/
 data/gui/*
