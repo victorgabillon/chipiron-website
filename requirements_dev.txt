@@ -3,21 +3,21 @@
 # Install with: pip install -r requirements-dev.txt
 
 # Automation
-tox>=4.30.2
-types-PyYAML>=6.0.12.12
+tox>=4.30.3
+types-PyYAML==6.0.12.12
 
 # Testing
-pytest>=8.4.1
+pytest==8.4.2
 coverage
-pytest-cov>=6.0.0
+pytest-cov==6.0.0
 
 # Linting & formatting
-flake8>=7.3.0
-black>=25.1.0
-isort>=6.0.1
+flake8==7.3.0
+black==25.9.0
+isort==6.1.0
 
 # Type checking
-mypy>=1.18.1
+mypy==1.18.2
 
 # Building & publishing
 build
