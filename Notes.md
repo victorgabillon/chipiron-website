@@ -2,7 +2,7 @@
 
 ## Fask app
 ```
-conda activate chipiron3.12
+conda activate chipiron3.13
 python flaskapp/flask_app.py
 ```
 
@@ -17,7 +17,7 @@ gcloud auth login
 
 Finding services : gcloud run services list
 
-Upload: gcloud run deploy   --allow-unauthenticated --source .
+Upload: gcloud run deploy   --allow-unauthenticated --source .  --project chipironchess
 
 link : https://console.cloud.google.com/run/detail/europe-west2/chipiron/metrics?hl=fr&inv=1&invt=Ab1U8A&project=chipironchess
 

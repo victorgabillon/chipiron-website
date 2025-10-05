@@ -1,4 +1,4 @@
-chipiron==0.1.9
+chipiron==0.1.10
 
 flask
 flask_cors

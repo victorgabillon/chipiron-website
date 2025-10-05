@@ -33,7 +33,7 @@ Chipiron Website is a web application for playing chess against the Chipiron che
 
 ### Prerequisites
 
-- Python 3.12
+- Python 3.13
 - [chipiron](https://github.com/victorgabillon/chipiron) Python package
 - (Optional) Docker for containerized deployment
 
