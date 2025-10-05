@@ -3,8 +3,8 @@ import random
 from encodings.punycode import T
 from typing import Union
 
-from chipiron.environments.chess.board import BoardChi, create_board_chi
-from chipiron.environments.chess.board.utils import FenPlusHistory, fen
+from chipiron.environments.chess_env.board import BoardChi, create_board_chi
+from chipiron.environments.chess_env.board.utils import FenPlusHistory, fen
 from chipiron.players.factory import create_chipiron_player
 from chipiron.players.move_selector.move_selector import MoveRecommendation
 from chipiron.scripts.chipiron_args import ImplementationArgs
