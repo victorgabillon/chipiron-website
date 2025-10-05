@@ -1,66 +1,58 @@
-# Use official Python 3.13 slim image
+# ──────────────────────────────────────────────
+# Base: official slim Python image
+# ──────────────────────────────────────────────
 FROM python:3.13-slim
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV APP_HOME=/back-end
+ENV PYTHONUNBUFFERED=1 \
+    APP_HOME=/back-end \
+    PATH="/root/.cargo/bin:$PATH"
+
 WORKDIR $APP_HOME
 
+# ──────────────────────────────────────────────
+# Install minimal system dependencies in one layer
+# ──────────────────────────────────────────────
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential python3-dev libffi-dev libssl-dev pkg-config curl \
+    gcc g++ make cargo \
+    libxcb-cursor0 libxcb-xinerama0 '^libxcb.*-dev' \
+    libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev \
+    libxkbcommon-dev libxkbcommon-x11-dev libgl1 libegl1 \
+ && rm -rf /var/lib/apt/lists/*
 
+# ──────────────────────────────────────────────
+# Install Rust (non-interactive)
+# ──────────────────────────────────────────────
+RUN curl -fsSL https://sh.rustup.rs | bash -s -- -y --default-toolchain stable
 
-RUN apt-get update && apt-get install -y build-essential
-RUN apt-get install -y python3-dev
-RUN apt-get install -y libffi-dev
-RUN apt-get install -y libssl-dev
-RUN apt-get install -y cargo
-RUN apt-get install -y gcc
-RUN apt-get install -y g++
-RUN apt-get install -y make
-RUN apt-get install -y    curl
-RUN apt-get install -y    pkg-config
+# ──────────────────────────────────────────────
+# Upgrade pip & build essentials
+# ──────────────────────────────────────────────
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel build
 
-RUN pip install --upgrade pip setuptools wheel build
-
-
-# Copy application code
-COPY requirements.txt requirements.txt
-
-# Install Rust for building Rust-based Python packages
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:$PATH"
-
-RUN cargo install cargo-update
-RUN cargo search serde || true  # Trigger index fetch early, avoids hanging during `pip install`
-
-RUN apt install libxcb-cursor0  libxcb-xinerama0  '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev -y
-RUN apt-get update && apt-get install -y libgl1 libegl1
-
-
-# Install Python packages
-RUN pip install --upgrade pip
+# ──────────────────────────────────────────────
+# Install Python dependencies
+# ──────────────────────────────────────────────
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+# Optional: only if you really need PyTorch
+RUN pip install --no-cache-dir torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
 
-# Add and run Makefile
-COPY MakefileForTest.mk Makefile
-
-# Copy application code
+# ──────────────────────────────────────────────
+# Copy application files
+# ──────────────────────────────────────────────
 COPY . .
 
-# Fix permissions (Cloud Run uses rootless container runtime)
-RUN chmod -R 777 flaskapp
+# ──────────────────────────────────────────────
+# Permissions for Cloud Run’s rootless runtime
+# ──────────────────────────────────────────────
+RUN chmod -R 755 flaskapp \
+ && addgroup --system app && adduser --system --ingroup app appuser
 
+USER appuser:app
 
-# Add non-root user
-RUN addgroup --system test && \
-    adduser --system testuser --ingroup test
-
-
-USER testuser:test
-
-# Cloud Run will inject PORT, so we bind to it
-ENV HOME=/root
-
-
-CMD exec gunicorn --bind 0.0.0.0:${PORT} --workers 1 --threads 8 --timeout 0 flaskapp.flask_app:app
+# ──────────────────────────────────────────────
+# Run the app
+# ──────────────────────────────────────────────
+CMD ["gunicorn", "--bind", "0.0.0.0:${PORT}", "--workers", "1", "--threads", "8", "--timeout", "0", "flaskapp.flask_app:app"]

@@ -3,34 +3,45 @@ name: ci
 on:
   push:
     branches:
-      - 'main'
-
+      - main
 
 jobs:
-
-
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ ubuntu-latest]
-        python-version: [ '3.13' ]
+        python-version: ['3.13']
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
+      - name: Free up disk space
+        run: |
+          echo "Initial disk usage:"
+          df -h
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker system prune -af || true
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+          sudo rm -rf /tmp/*
+          echo "After cleanup:"
+          df -h
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install dependencies
         run: |
-          sudo rm -rf /tmp/*
-          docker system prune -af || true
-          sudo apt-get clean
           python -m pip install --upgrade pip
-          pip install tox tox-gh-actions
-          sudo apt -y install libegl1
-      - name: Test with tox
-        run: tox
+          pip install --upgrade tox tox-gh-actions
+          sudo apt-get update
+          sudo apt-get install -y libegl1
+          pip cache purge || true
+          df -h
 
+      - name: Run tests with tox
+        run: tox
