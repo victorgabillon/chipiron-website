@@ -33,14 +33,14 @@ RUN cargo install cargo-update
 RUN cargo search serde || true  # Trigger index fetch early, avoids hanging during `pip install`
 
 RUN apt install libxcb-cursor0  libxcb-xinerama0  '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev -y
-RUN apt-get update && apt-get install -y libgl1-mesa-glx libegl1-mesa
+RUN apt-get update && apt-get install -y libgl1 libegl1
 
 
 # Install Python packages
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install torch==2.2.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
 
 # Add and run Makefile
 COPY MakefileForTest.mk Makefile
